@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFD1DC">
+<title>NARIN — little archive</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><div class="brand">A LITTLE ARCHIVE · 444</div><button class="admin" id="editHome">✧ 编辑主页</button></header>
+  <section class="hero" id="hero">
+    <div class="hero-slides" id="heroSlides"></div><div class="hero-dots" id="heroDots"></div>
+    <div class="hero-content"><div class="eyebrow">MY DEAR, MY FOREVER INSPIRATION</div><h1 id="heroName">NARIN</h1><p id="heroSub">MEOVV · 나린 · 린니</p></div>
+  </section>
+  <div class="intro"><p id="introText">收集每一个闪闪发光的瞬间。<br>一个关于 NARIN 的小小档案馆。</p><span class="pill"><b>DEBUT · 2024.09.06</b></span></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><nav class="tabs" id="tabs" style="flex:1;min-width:0">
+    <button class="active" data-filter="all">全部</button><button data-filter="photo">PHOTO</button><button data-filter="moment">MOMENTS</button><button data-filter="diary">DIARY</button>
+  </nav><button class="admin" id="editTabs">编辑导航</button></div>
+  <div class="section-head"><h2 id="sectionTitle">Little memories</h2><span id="count">0 ITEMS</span></div>
+  <main class="grid" id="gallery"></main>
+  <div class="footer">MADE WITH LOVE · NARIN</div>
+</div>
+
+<div class="overlay" id="entryOverlay"><div class="modal">
+  <div class="modal-head"><h2 id="entryHeading">Add a memory</h2><button class="close" data-close="entryOverlay">×</button></div>
+  <form id="entryForm">
+    <label>分类</label><select id="category"><option value="photo">PHOTO · 照片</option><option value="moment">MOMENTS · 瞬间</option><option value="diary">DIARY · 记录</option></select>
+    <label>标题</label><input id="title" maxlength="60" placeholder="给这份回忆起个名字" required>
+    <label>日期</label><input id="date" type="date">
+    <label>文字内容</label><textarea id="description" maxlength="1500" placeholder="写下一点想保存的话……"></textarea>
+    <label for="postLink">外部链接（可选）</label>
+<input
+  id="postLink"
+  type="url"
+  inputmode="url"
+  maxlength="2048"
+  placeholder="https://www.youtube.com/..."
+>
+<p class="note">可以添加视频、音乐或其他网页链接，留空则不显示链接按钮。</p>
+    <label>上传图片、GIF 或视频（可多选）</label><div class="upload" onclick="document.getElementById('mediaFile').click()">＋ 点击选择图片、GIF 或视频；缩略图上的 × 可删除<input id="mediaFile" type="file" accept="image/*,video/*" multiple hidden></div>
+    <div class="preview-strip" id="previewStrip"></div>
+    <button class="primary" type="submit">保存这份回忆</button>
+    <p class="note">图片和文字会保存在当前浏览器的本机数据库中。此版本尚未同步到公开网站。</p>
+  </form>
+</div></div>
+
+<div class="overlay" id="homeOverlay"><div class="modal">
+  <div class="modal-head"><h2>编辑主页</h2><button class="close" data-close="homeOverlay">×</button></div>
+  <label>主页名称</label><input id="homeName" value="NARIN">
+  <label>副标题</label><input id="homeSub" value="MEOVV · 나린 · 린니">
+  <label>主页介绍</label><textarea id="homeIntro">收集每一个闪闪发光的瞬间。\n一个关于 NARIN 的小小档案馆。</textarea>
+  <label for="homeTextColor">主页字体颜色</label><div style="display:flex;align-items:center;gap:12px"><input id="homeTextColor" type="color" value="#392D43" style="width:58px;height:44px;padding:4px;border-radius:10px"><span class="note" style="margin:0">选择你喜欢的文字颜色，预览会应用到介绍、栏目标题和内容文字。</span></div>
+  <label>顶部滚动大屏图片（可多选）</label><div class="upload" onclick="document.getElementById('heroFile').click()">＋ 添加多张顶部展示图片；缩略图上的 × 可删除<input id="heroFile" type="file" accept="image/*" multiple hidden></div>
+  <div class="preview-strip" id="heroPreviewStrip"></div>
+  <button class="primary" id="saveHome">保存主页设置</button>
+  <p class="note">主页设置也仅保存在当前浏览器。正式公开时会改为云端共享。</p>
+</div></div>
+<button class="fab" id="addEntry" aria-label="新增内容">＋</button><div class="overlay" id="tabsOverlay"><div class="modal">
+  <div class="modal-head"><h2>编辑导航栏</h2><button class="close" data-close="tabsOverlay">×</button></div>
+  <p class="note">可以修改栏目名称、调整顺序，也可以新增或删除自定义栏目。“全部”固定在最前面；原有 PHOTO、MOMENTS、DIARY 栏目可以改名和排序。</p>
+  <div class="nav-editor-list" id="tabsEditor"></div>
+  <label for="newTabName">新增栏目名称</label>
+  <div class="nav-add-row"><input id="newTabName" maxlength="18" placeholder="例如：VIDEO、MUSIC、FAN LETTER"><button class="secondary" type="button" id="addTab">＋ 添加</button></div>
+  <button class="primary" id="saveTabs" type="button">保存导航设置</button>
+  <p class="note">删除自定义栏目时，其中的帖子会自动移到第一个仍保留的栏目，不会直接删除帖子。</p>
+ </div></div>
+
+<div class="detail-overlay" id="detailOverlay">
+ <div class="detail-panel">
+  <div class="detail-top"><span id="detailDate">MEMORY</span><button class="detail-close" id="closeDetail">×</button></div>
+  <div class="detail-stage" id="detailStage"><img id="detailImage" alt=""><video id="detailVideo" controls playsinline preload="metadata"></video><button class="detail-arrow prev" id="detailPrev">‹</button><button class="detail-arrow next" id="detailNext">›</button></div>
+  <div class="detail-count" id="detailCount"></div>
+ <div class="detail-caption">
+  <h2 id="detailTitle"></h2>
+  <p id="detailDescription"></p>
+  <a
+    id="detailLink"
+    class="detail-link"
+    target="_blank"
+    rel="noopener noreferrer"
+    hidden
+  >打开相关链接 ↗</a>
+</div>
+</div>
+</div>
+
+<div class="splash-overlay" id="splashOverlay">
+ <div class="splash-screen" id="splashScreen">
+  <img id="splashImage" alt="">
+  <div class="splash-copy"><small>A LITTLE ARCHIVE · 444</small><h1 id="splashName">NARIN</h1><p>MEOVV · 나린 · 린니</p></div>
+  <div class="splash-hint"><span>⌃</span>上滑进入 · 或等待自动进入</div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="js/main.js"></script>
+</body></html>
