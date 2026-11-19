@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFD1DC">
+<title>NARIN — little archive</title>
+<style>
+:root{--ink:#392d43;--page-text-color:#392d43;--muted:#8e7e98;--pink:#e9c9e8;--lilac:#d9cafa;--paper:#fffaff;--line:#f0e5f2;--accent:#a77bb5;--shadow:0 14px 40px rgba(112,77,128,.12)}
+*{box-sizing:border-box}body{margin:0;background:#FFEDF1;color:var(--page-text-color);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.wrap{max-width:760px;margin:auto;padding:0 17px 100px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:18px 2px 12px}
+.brand{font-family:Georgia,serif;letter-spacing:.18em;font-size:12px;color:#9b7ca5}.admin{border:1px solid #eadbed;background:#fff9;border-radius:99px;padding:9px 13px;color:#80688b;font-size:12px}
+.hero{position:relative;overflow:hidden;border-radius:27px;min-height:290px;background:linear-gradient(130deg,#d9c4e9,#f2d7e8 54%,#cfc6ef);box-shadow:var(--shadow);display:flex;align-items:end;padding:25px;color:var(--page-text-color)}
+.hero:before{display:none}
+.hero:after{display:none}
+.hero-content{position:relative;z-index:1;text-shadow:0 2px 15px #6c547b55}
+.eyebrow{font-size:10px;letter-spacing:.27em;margin-bottom:10px;opacity:.9}.hero h1{font-family:Georgia,serif;font-weight:500;letter-spacing:.12em;font-size:clamp(38px,10vw,62px);margin:0}.hero p{margin:8px 0 0;font-size:12px;letter-spacing:.12em}
+.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.65;display:none}
+.hero.has-photo .hero-photo{display:block}.hero.has-photo{background:#bda6c9}
+.hero.has-photo:before,.hero.has-photo:after{display:none}
+.intro{display:flex;justify-content:space-between;align-items:center;padding:18px 5px 8px;gap:12px}
+.intro p{margin:0;color:var(--page-text-color);font-size:12px;line-height:1.7}
+.pill{font-size:10px;letter-spacing:.12em;color:#9a7ba5;background:#fff9;border:1px solid #eee1f0;padding:7px 11px;border-radius:99px;white-space:nowrap}
+.tabs{display:flex;gap:8px;overflow:auto;padding:10px 0 16px;scrollbar-width:none}.tabs button{flex:0 0 auto;border:1px solid #eaddec;background:#fff9;color:#927e99;border-radius:99px;padding:10px 15px;font-size:12px}.tabs button.active{background:#FFD1DC;color:#6f4b59;border-color:#FFD1DC}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin:15px 2px 13px}.section-head h2{font-family:Georgia,serif;font-size:22px;font-weight:500;margin:0;color:var(--page-text-color)}.section-head span{font-size:11px;color:#a18ea8}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#fffD;border:1px solid #f0e6f2;border-radius:19px;overflow:hidden;box-shadow:0 7px 22px rgba(112,77,128,.06)}
+.cover{aspect-ratio:4/4.5;background:linear-gradient(145deg,#f0dced,#e5def8);position:relative;display:flex;align-items:center;justify-content:center;color:#aa8bb5;font-family:Georgia,serif;font-size:28px;overflow:hidden}
+.cover img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.card-body{padding:12px}.date{font-size:10px;color:#ad94b4;letter-spacing:.08em}.card h3{font-size:14px;margin:6px 0;color:var(--page-text-color);font-weight:600}.card p{font-size:11px;color:var(--page-text-color);line-height:1.6;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.card-actions{display:flex;gap:7px;margin-top:10px}.tiny{border:1px solid #eee2f0;background:#fff;border-radius:9px;color:#927b9a;font-size:10px;padding:6px 9px}
+.empty{grid-column:1/-1;text-align:center;padding:35px 15px;border:1px dashed #dfcfe5;border-radius:18px;color:#a18ea8;font-size:12px;line-height:1.8}
+.footer{text-align:center;color:#b19db7;font-family:Georgia,serif;font-size:11px;letter-spacing:.18em;padding:35px 0 10px}
+.overlay{position:fixed;inset:0;background:#34283b66;display:none;align-items:end;justify-content:center;z-index:10;padding:12px}.overlay.show{display:flex}
+.modal{width:min(100%,560px);max-height:90vh;overflow:auto;background:#fffaff;border-radius:24px 24px 18px 18px;padding:20px;box-shadow:0 20px 70px #39234244}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal h2{font-family:Georgia,serif;font-weight:500;margin:0;font-size:22px}.close{border:0;background:#f4eaf5;color:#8b7394;border-radius:50%;width:34px;height:34px}
+label{display:block;font-size:11px;color:#8d7896;margin:13px 0 6px}input,textarea,select{width:100%;border:1px solid #eaddec;background:white;border-radius:12px;padding:12px;color:#4a3b51;outline:none}textarea{min-height:92px;resize:vertical}input:focus,textarea:focus{border-color:#ba9bc6}
+.upload{border:1px dashed #d8c3df;border-radius:14px;padding:16px;text-align:center;color:#9c83a5;font-size:12px;background:#fdf8ff}
+.preview{width:100%;max-height:190px;object-fit:cover;border-radius:12px;margin-top:9px;display:none}
+.primary{width:100%;border:0;border-radius:13px;background:linear-gradient(100deg,#aa89b8,#d19fbd);color:white;padding:13px;margin-top:17px;font-size:13px;letter-spacing:.08em}
+.secondary{border:1px solid #e8d9eb;background:white;color:#92799a;border-radius:12px;padding:10px 13px;font-size:12px}
+.note{font-size:10px;line-height:1.7;color:#a08da6;margin-top:10px}
+.fab{position:fixed;right:20px;bottom:22px;z-index:8;border:0;border-radius:50%;width:58px;height:58px;background:linear-gradient(140deg,#a987b8,#d5a4c5);color:white;font-size:29px;box-shadow:0 8px 24px #8e6b9b55}.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#51415a;color:white;padding:10px 16px;border-radius:99px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20}.toast.show{opacity:1}
+@media(min-width:600px){.wrap{padding-top:12px}.hero{min-height:360px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.overlay{align-items:center}.modal{border-radius:24px}}
+
+.hero{display:block;padding:0;min-height:300px;background:linear-gradient(135deg,#f1dbe7,#e7dff1)}
+.hero-slides{position:absolute;inset:0;display:flex;transition:transform .55s ease}
+.hero-slide{min-width:100%;height:100%;position:relative}
+.hero-slide img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-slide:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#4e3c5a70,transparent 60%)}
+.hero-content{position:absolute;left:25px;bottom:24px;z-index:2}
+.hero-dots{position:absolute;z-index:3;right:18px;bottom:18px;display:flex;gap:6px}
+.hero-dot{border:0;width:7px;height:7px;padding:0;border-radius:99px;background:#ffffff80}
+.hero-dot.active{width:20px;background:#fff}
+.hero:before,.hero:after{pointer-events:none}
+.preview-strip{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.preview-item{position:relative;width:68px;height:68px}.preview-item img{width:68px;height:68px;object-fit:cover;border-radius:10px;border:1px solid #eee0f0}.preview-remove{position:absolute;right:-6px;top:-6px;width:22px;height:22px;border:0;border-radius:50%;background:#745b7c;color:#fff;font-size:14px;line-height:1}
+#gallery.layout-stream{grid-template-columns:minmax(0,1fr)}
+#gallery.layout-stream .card{display:block}
+#gallery.layout-stream .cover{height:184px;min-height:0;width:100%;aspect-ratio:auto}
+#gallery.layout-stream .cover img{object-fit:cover;object-position:center}
+#gallery.layout-stream .card-body{padding:12px;min-height:104px}
+#gallery.layout-stream .card p{font-size:11px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#gallery .cover{cursor:pointer}
+#gallery .card-body{cursor:pointer}
+#gallery .card-actions{position:relative;z-index:2}
+.detail-overlay,.splash-overlay{position:fixed;inset:0;background:#241b2dcc;display:none;align-items:center;justify-content:center;z-index:30;padding:14px}
+.detail-overlay.show,.splash-overlay.show{display:flex}
+.detail-panel{width:min(100%,560px);max-height:92vh;overflow:auto;background:#fffaff;border-radius:24px;padding:14px;box-shadow:0 18px 60px #24152c55}
+.detail-top{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 10px;color:#9a7ba5;font-size:11px;letter-spacing:.12em}
+.detail-close{border:0;background:#f7eaf4;color:#80688b;border-radius:50%;width:32px;height:32px;font-size:20px}
+.detail-stage{position:relative;background:#f2e7f3;border-radius:16px;overflow:hidden;height:min(58vh,460px);display:flex;align-items:center;justify-content:center}
+.detail-stage img{width:100%;height:100%;object-fit:contain}
+.detail-arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;border-radius:50%;width:36px;height:36px;background:#fffC;color:#735b7d;font-size:22px}
+.detail-arrow.prev{left:9px}.detail-arrow.next{right:9px}
+.detail-caption{padding:14px 4px 5px}.detail-caption h2{font-size:18px;margin:5px 0;color:#594763}.detail-caption p{font-size:13px;line-height:1.7;white-space:pre-wrap;color:#6e6074}
+.detail-count{text-align:center;font-size:11px;color:#a18ea8;padding-top:8px}
+.splash-overlay{z-index:50;padding:0;background:#e8d8ed}
+.splash-screen{position:relative;width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;background:linear-gradient(145deg,#cdb8dd,#f1cdda 55%,#d9c9ec)}
+.splash-screen:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#38263d88,transparent 72%)}
+.splash-screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.72}
+.splash-copy{position:relative;z-index:1;padding:28px;text-shadow:0 2px 18px #49344d66}
+.splash-copy small{letter-spacing:.3em;font-size:10px}.splash-copy h1{font:500 clamp(42px,12vw,68px) Georgia,serif;letter-spacing:.14em;margin:16px 0 8px}.splash-copy p{font-size:11px;letter-spacing:.18em}
+.splash-hint{position:absolute;z-index:2;bottom:34px;left:0;right:0;font-size:11px;letter-spacing:.12em;color:#fff;text-shadow:0 1px 8px #49344d}
+.splash-hint span{display:block;font-size:20px;margin-bottom:5px;animation:upHint 1.2s infinite alternate}
+@keyframes upHint{to{transform:translateY(-7px)}}
+
+/* V5：缩短帖子文字区，并支持视频预览 */
+#gallery .card-body{padding:9px 11px 7px;min-height:0}
+#gallery .card h3{margin:3px 0 4px}
+#gallery .card p{-webkit-line-clamp:2}
+#gallery .card-actions{padding:0 11px 9px!important;margin-top:7px}
+#gallery.layout-stream .card-body{padding:9px 12px 7px;min-height:0}
+#gallery.layout-stream .card p{-webkit-line-clamp:2}
+.cover video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.preview-item img,.preview-item video{width:68px;height:68px;object-fit:cover;border-radius:10px;border:1px solid #eee0f0}
+.detail-stage video{width:100%;height:100%;object-fit:contain;display:none}
+.nav-editor-list{display:flex;flex-direction:column;gap:9px;margin:12px 0}
+.nav-editor-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.nav-editor-row input{min-width:0}
+.nav-editor-actions{display:flex;gap:5px}
+.nav-editor-actions button{border:1px solid #eaddec;background:#fff;border-radius:9px;color:#80688b;padding:8px 9px;font-size:11px}
+.nav-add-row{display:flex;gap:8px;align-items:center}
+.nav-add-row input{flex:1;min-width:0}
+.nav-add-row button{white-space:nowrap}
+.video-mark{position:absolute;right:9px;bottom:9px;z-index:1;padding:5px 8px;border-radius:99px;background:#392d43aa;color:white;font-size:10px;letter-spacing:.08em}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar"><div class="brand">A LITTLE ARCHIVE · 444</div><button class="admin" id="editHome">✧ 编辑主页</button></header>
+  <section class="hero" id="hero">
+    <div class="hero-slides" id="heroSlides"></div><div class="hero-dots" id="heroDots"></div>
+    <div class="hero-content"><div class="eyebrow">MY DEAR, MY FOREVER INSPIRATION</div><h1 id="heroName">NARIN</h1><p id="heroSub">MEOVV · 나린 · 린니</p></div>
+  </section>
+  <div class="intro"><p id="introText">收集每一个闪闪发光的瞬间。<br>一个关于 NARIN 的小小档案馆。</p><span class="pill"><b>DEBUT · 2024.09.06</b></span></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><nav class="tabs" id="tabs" style="flex:1;min-width:0">
+    <button class="active" data-filter="all">全部</button><button data-filter="photo">PHOTO</button><button data-filter="moment">MOMENTS</button><button data-filter="diary">DIARY</button>
+  </nav><button class="admin" id="editTabs">编辑导航</button></div>
+  <div class="section-head"><h2 id="sectionTitle">Little memories</h2><span id="count">0 ITEMS</span></div>
+  <main class="grid" id="gallery"></main>
+  <div class="footer">MADE WITH LOVE · NARIN</div>
+</div>
+
+<div class="overlay" id="entryOverlay"><div class="modal">
+  <div class="modal-head"><h2 id="entryHeading">Add a memory</h2><button class="close" data-close="entryOverlay">×</button></div>
+  <form id="entryForm">
+    <label>分类</label><select id="category"><option value="photo">PHOTO · 照片</option><option value="moment">MOMENTS · 瞬间</option><option value="diary">DIARY · 记录</option></select>
+    <label>标题</label><input id="title" maxlength="60" placeholder="给这份回忆起个名字" required>
+    <label>日期</label><input id="date" type="date">
+    <label>文字内容</label><textarea id="description" maxlength="1500" placeholder="写下一点想保存的话……"></textarea>
+    <label>上传图片、GIF 或视频（可多选）</label><div class="upload" onclick="document.getElementById('mediaFile').click()">＋ 点击选择图片、GIF 或视频；缩略图上的 × 可删除<input id="mediaFile" type="file" accept="image/*,video/*" multiple hidden></div>
+    <div class="preview-strip" id="previewStrip"></div>
+    <button class="primary" type="submit">保存这份回忆</button>
+    <p class="note">图片和文字会保存在当前浏览器的本机数据库中。此版本尚未同步到公开网站。</p>
+  </form>
+</div></div>
+
+<div class="overlay" id="homeOverlay"><div class="modal">
+  <div class="modal-head"><h2>编辑主页</h2><button class="close" data-close="homeOverlay">×</button></div>
+  <label>主页名称</label><input id="homeName" value="NARIN">
+  <label>副标题</label><input id="homeSub" value="MEOVV · 나린 · 린니">
+  <label>主页介绍</label><textarea id="homeIntro">收集每一个闪闪发光的瞬间。\n一个关于 NARIN 的小小档案馆。</textarea>
+  <label for="homeTextColor">主页字体颜色</label><div style="display:flex;align-items:center;gap:12px"><input id="homeTextColor" type="color" value="#392D43" style="width:58px;height:44px;padding:4px;border-radius:10px"><span class="note" style="margin:0">选择你喜欢的文字颜色，预览会应用到介绍、栏目标题和内容文字。</span></div>
+  <label>顶部滚动大屏图片（可多选）</label><div class="upload" onclick="document.getElementById('heroFile').click()">＋ 添加多张顶部展示图片；缩略图上的 × 可删除<input id="heroFile" type="file" accept="image/*" multiple hidden></div>
+  <div class="preview-strip" id="heroPreviewStrip"></div>
+  <button class="primary" id="saveHome">保存主页设置</button>
+  <p class="note">主页设置也仅保存在当前浏览器。正式公开时会改为云端共享。</p>
+</div></div>
+<button class="fab" id="addEntry" aria-label="新增内容">＋</button><div class="overlay" id="tabsOverlay"><div class="modal">
+  <div class="modal-head"><h2>编辑导航栏</h2><button class="close" data-close="tabsOverlay">×</button></div>
+  <p class="note">可以修改栏目名称、调整顺序，也可以新增或删除自定义栏目。“全部”固定在最前面；原有 PHOTO、MOMENTS、DIARY 栏目可以改名和排序。</p>
+  <div class="nav-editor-list" id="tabsEditor"></div>
+  <label for="newTabName">新增栏目名称</label>
+  <div class="nav-add-row"><input id="newTabName" maxlength="18" placeholder="例如：VIDEO、MUSIC、FAN LETTER"><button class="secondary" type="button" id="addTab">＋ 添加</button></div>
+  <button class="primary" id="saveTabs" type="button">保存导航设置</button>
+  <p class="note">删除自定义栏目时，其中的帖子会自动移到第一个仍保留的栏目，不会直接删除帖子。</p>
+ </div></div>
+
+<div class="detail-overlay" id="detailOverlay">
+ <div class="detail-panel">
+  <div class="detail-top"><span id="detailDate">MEMORY</span><button class="detail-close" id="closeDetail">×</button></div>
+  <div class="detail-stage" id="detailStage"><img id="detailImage" alt=""><video id="detailVideo" controls playsinline preload="metadata"></video><button class="detail-arrow prev" id="detailPrev">‹</button><button class="detail-arrow next" id="detailNext">›</button></div>
+  <div class="detail-count" id="detailCount"></div>
+  <div class="detail-caption"><h2 id="detailTitle"></h2><p id="detailDescription"></p></div>
+ </div>
+</div>
+<div class="splash-overlay" id="splashOverlay">
+ <div class="splash-screen" id="splashScreen">
+  <img id="splashImage" alt="">
+  <div class="splash-copy"><small>A LITTLE ARCHIVE · 444</small><h1 id="splashName">NARIN</h1><p>MEOVV · 나린 · 린니</p></div>
+  <div class="splash-hint"><span>⌃</span>上滑进入 · 或等待自动进入</div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const DB='narinLittleArchive', STORE='entries';
+let db, entries=[], editingId=null, pendingMedia=[], pendingHero=null, pendingHeroes=[], activeFilter='all', heroBlob=null, heroTimer=null, heroIndex=0, detailEntry=null, detailIndex=0, splashTimer=null; let navItems=[];
+const $=id=>document.getElementById(id);
+function openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB,2);req.onupgradeneeded=()=>{const d=req.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});if(!d.objectStoreNames.contains('hero'))d.createObjectStore('hero',{keyPath:'id'});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});}
+function tx(mode='readonly'){return db.transaction(STORE,mode).objectStore(STORE)}
+function allEntries(){return new Promise((resolve,reject)=>{const r=tx().getAll();r.onsuccess=()=>resolve(r.result.sort((a,b)=>(b.date||'').localeCompare(a.date||'')));r.onerror=()=>reject(r.error);});}
+function put(item){return new Promise((resolve,reject)=>{const r=tx('readwrite').put(item);r.onsuccess=resolve;r.onerror=()=>reject(r.error);});}
+function del(id){return new Promise((resolve,reject)=>{const r=tx('readwrite').delete(id);r.onsuccess=resolve;r.onerror=()=>reject(r.error);});}
+function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200);}
+function imgURL(blob){return blob?URL.createObjectURL(blob):'';}
+function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function entryMedia(item){
+ return item?.media?.length?item.media:(item?.images?.length?item.images:(item?.image?[item.image]:[]));
+}
+function isVideo(file){return !!file?.type?.startsWith('video/');}
+function categoryLabel(id){return navItems.find(x=>x.id===id)?.label||String(id||'').toUpperCase();}
+function render(){
+ const list=activeFilter==='all'?entries:entries.filter(e=>e.category===activeFilter);
+ $('count').textContent=list.length+' ITEMS';
+ $('sectionTitle').textContent=activeFilter==='all'?'Little memories':categoryLabel(activeFilter);
+ $('gallery').className='grid'+((activeFilter==='moment'||activeFilter==='diary')?' layout-stream':'');
+ $('gallery').innerHTML=list.length?list.map(e=>{
+  const media=entryMedia(e), first=media[0];
+  let cover='✧';
+  if(first){
+   const url=imgURL(first);
+   cover=isVideo(first)
+    ? `<video src="${url}" autoplay muted loop playsinline preload="metadata"></video><span class="video-mark">VIDEO</span>`
+    : `<img src="${url}" alt="">`;
+  }
+  return `<article class="card"><div class="cover" onclick="openDetail('${e.id}')">${cover}</div><div class="card-body" onclick="openDetail('${e.id}')"><div class="date">${safe(e.date||'A SPECIAL DAY')} · ${safe(categoryLabel(e.category))}</div><h3>${safe(e.title)}</h3><p>${safe(e.description)}</p></div><div class="card-actions"><button class="tiny" onclick="event.stopPropagation();editEntry('${e.id}')">编辑</button><button class="tiny" onclick="event.stopPropagation();deleteEntry('${e.id}')">删除</button></div></article>`;
+ }).join(''):`<div class="empty">这里还空着，等待你放进喜欢的照片和故事。<br>点击右下角「＋」开始收藏 ✧</div>`;
+}
+function showDetailMedia(){
+ if(!detailEntry)return;
+ const media=entryMedia(detailEntry), current=media[detailIndex];
+ const image=$('detailImage'), video=$('detailVideo');
+ video.pause();video.removeAttribute('src');video.load();
+ image.removeAttribute('src');
+ if(current){
+  $('detailStage').style.display='flex';
+  if(isVideo(current)){
+   image.style.display='none';video.style.display='block';video.src=imgURL(current);video.load();
+  }else{
+   video.style.display='none';image.style.display='block';image.src=imgURL(current);
+  }
+ }else{
+  $('detailStage').style.display='none';
+ }
+ $('detailCount').textContent=media.length?(detailIndex+1)+' / '+media.length:'暂无媒体';
+ $('detailPrev').style.display=media.length>1?'block':'none';
+ $('detailNext').style.display=media.length>1?'block':'none';
+}
+function openDetail(id){
+ detailEntry=entries.find(x=>x.id===id);if(!detailEntry)return;
+ detailIndex=0;
+ $('detailDate').textContent=(detailEntry.date||'A SPECIAL DAY')+' · '+categoryLabel(detailEntry.category).toUpperCase();
+ $('detailTitle').textContent=detailEntry.title||'';
+ $('detailDescription').textContent=detailEntry.description||'';
+ showDetailMedia();
+ $('detailOverlay').classList.add('show');
+}
+function moveDetail(step){
+ if(!detailEntry)return;
+ const media=entryMedia(detailEntry);
+ if(!media.length)return;
+ detailIndex=(detailIndex+step+media.length)%media.length;
+ showDetailMedia();
+}
+function showEntry(item){
+ editingId=item?.id||null;
+ pendingMedia=entryMedia(item).slice();
+ $('entryHeading').textContent=item?'Edit a memory':'Add a memory';
+ updateCategoryOptions(item?.category||navItems.find(x=>x.id!=='all')?.id||'photo');
+ $('title').value=item?.title||'';
+ $('date').value=item?.date||new Date().toISOString().slice(0,10);
+ $('description').value=item?.description||'';
+ renderPreviews(pendingMedia,'previewStrip');
+ $('mediaFile').value='';
+ $('entryOverlay').classList.add('show');
+}
+function renderPreviews(files,target){
+ const box=$(target);box.innerHTML='';
+ (files||[]).forEach((file,i)=>{
+  const wrap=document.createElement('div');wrap.className='preview-item';
+  const url=imgURL(file);let mediaEl;
+  if(isVideo(file)){mediaEl=document.createElement('video');mediaEl.src=url;mediaEl.muted=true;mediaEl.playsInline=true;mediaEl.preload='metadata';}
+  else{mediaEl=document.createElement('img');mediaEl.src=url;mediaEl.alt='图片预览';}
+  const rm=document.createElement('button');rm.type='button';rm.className='preview-remove';rm.textContent='×';rm.title='移除此文件';
+  rm.onclick=()=>{
+   if(target==='previewStrip'){pendingMedia.splice(i,1);renderPreviews(pendingMedia,target);}
+   else{pendingHeroes.splice(i,1);renderPreviews(pendingHeroes,target);}
+  };
+  wrap.append(mediaEl,rm);box.appendChild(wrap);
+ });
+}
+
+window.editEntry=id=>{const e=entries.find(x=>x.id===id);if(e)showEntry(e)};
+window.deleteEntry=async id=>{if(confirm('确定删除这条内容吗？')){await del(id);await refresh();toast('已删除');}};
+async function refresh(){entries=await allEntries();render();}
+$('mediaFile').addEventListener('change',e=>{
+ const selected=Array.from(e.target.files).filter(f=>f.type.startsWith('image/')||f.type.startsWith('video/'));
+ if(!selected.length)return toast('请选择图片、GIF 或视频文件');
+ pendingMedia=[...pendingMedia,...selected];
+ renderPreviews(pendingMedia,'previewStrip');
+ e.target.value='';
+});
+$('entryForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const old=entries.find(x=>x.id===editingId);
+ const item={
+  id:editingId||crypto.randomUUID(),
+  category:$('category').value,
+  title:$('title').value.trim(),
+  date:$('date').value,
+  description:$('description').value.trim(),
+  media:pendingMedia.slice(),
+  images:pendingMedia.filter(f=>!isVideo(f)),
+  image:pendingMedia.find(f=>!isVideo(f))||null,
+  created:old?.created||Date.now()
+ };
+ await put(item);$('entryOverlay').classList.remove('show');await refresh();toast('已保存这份回忆');
+});
+const baseNav=[
+ {id:'all',label:'全部',fixed:true},
+ {id:'photo',label:'PHOTO',builtin:true},
+ {id:'moment',label:'MOMENTS',builtin:true},
+ {id:'diary',label:'DIARY',builtin:true}
+];
+function loadNav(){
+ try{
+  const saved=JSON.parse(localStorage.getItem('narinNavV5')||'null');
+  if(Array.isArray(saved)){
+   const valid=saved.filter(x=>x&&typeof x.id==='string'&&typeof x.label==='string');
+   const all=valid.find(x=>x.id==='all')||baseNav[0];
+   const result=[{...all,id:'all',fixed:true},...valid.filter(x=>x.id!=='all')];
+   baseNav.slice(1).forEach(base=>{if(!result.some(x=>x.id===base.id))result.push(base);});
+   return result;
+  }
+ }catch{}
+ let old={};try{old=JSON.parse(localStorage.getItem('narinTabs')||'{}')||{};}catch{}
+ return baseNav.map(x=>({...x,label:old[x.id]||x.label}));
+}
+navItems=loadNav();
+function updateCategoryOptions(selected){
+ const select=$('category');select.innerHTML='';
+ navItems.filter(x=>x.id!=='all').forEach(item=>{
+  const option=document.createElement('option');option.value=item.id;option.textContent=item.label;select.appendChild(option);
+ });
+ select.value=navItems.some(x=>x.id===selected)?selected:(navItems.find(x=>x.id!=='all')?.id||'photo');
+}
+function renderTabs(){
+ const holder=$('tabs');holder.innerHTML='';
+ navItems.forEach(item=>{
+  const button=document.createElement('button');button.type='button';button.dataset.filter=item.id;button.textContent=item.label;
+  if(activeFilter===item.id)button.classList.add('active');
+  button.onclick=()=>{
+   activeFilter=item.id;
+   holder.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===button));
+   render();
+  };
+  holder.appendChild(button);
+ });
+}
+function applyTabs(){renderTabs();}
+function renderTabsEditor(){
+ const holder=$('tabsEditor');holder.innerHTML='';
+ navItems.filter(x=>x.id!=='all').forEach((item,index)=>{
+  const row=document.createElement('div');row.className='nav-editor-row';
+  const input=document.createElement('input');input.maxLength=18;input.value=item.label;input.setAttribute('aria-label','栏目名称');
+  input.oninput=()=>{item.label=input.value;};
+  const actions=document.createElement('div');actions.className='nav-editor-actions';
+  const up=document.createElement('button');up.type='button';up.textContent='↑';up.title='上移';up.disabled=index===0;up.onclick=()=>{const at=navItems.findIndex(x=>x.id===item.id);[navItems[at-1],navItems[at]]=[navItems[at],navItems[at-1]];renderTabsEditor();};
+  const down=document.createElement('button');down.type='button';down.textContent='↓';down.title='下移';down.disabled=index===navItems.length-2;down.onclick=()=>{const at=navItems.findIndex(x=>x.id===item.id);[navItems[at+1],navItems[at]]=[navItems[at],navItems[at+1]];renderTabsEditor();};
+  actions.append(up,down);
+  if(!item.builtin){
+   const delButton=document.createElement('button');delButton.type='button';delButton.textContent='删除';delButton.onclick=async()=>{
+    const destination=navItems.find(x=>x.id!=='all'&&x.id!==item.id);
+    const related=entries.filter(entry=>entry.category===item.id);
+    if(related.length&&destination){
+     for(const entry of related)await put({...entry,category:destination.id});
+    }
+    navItems=navItems.filter(x=>x.id!==item.id);
+    if(activeFilter===item.id)activeFilter='all';
+    renderTabsEditor();applyTabs();await refresh();
+   };
+   actions.appendChild(delButton);
+  }
+  row.append(input,actions);holder.appendChild(row);
+ });
+}
+$('editTabs').onclick=()=>{$('newTabName').value='';renderTabsEditor();$('tabsOverlay').classList.add('show');};
+$('addTab').onclick=()=>{
+ const name=$('newTabName').value.trim();
+ if(!name)return toast('先输入栏目名称');
+ if(navItems.some(x=>x.label.toLowerCase()===name.toLowerCase()))return toast('已经有同名栏目了');
+ navItems.push({id:'custom-'+crypto.randomUUID(),label:name});
+ $('newTabName').value='';renderTabsEditor();toast('栏目已添加，记得保存设置');
+};
+$('saveTabs').onclick=()=>{
+ navItems=navItems.map(x=>({...x,label:x.label.trim()||x.id.toUpperCase()}));
+ localStorage.setItem('narinNavV5',JSON.stringify(navItems));
+ applyTabs();updateCategoryOptions($('category').value);
+ $('tabsOverlay').classList.remove('show');toast('导航设置已保存');
+};
+
+$('editHome').onclick=()=>{pendingHeroes=[];const hr=db.transaction('hero').objectStore('hero').getAll();hr.onsuccess=()=>{pendingHeroes=hr.result.sort((a,b)=>a.id-b.id).map(x=>x.blob);renderPreviews(pendingHeroes,'heroPreviewStrip');};$('homeName').value=$('heroName').textContent;$('homeSub').value=$('heroSub').textContent;$('homeIntro').value=$('introText').innerText.replace('\n','\n');$('homeTextColor').value=getComputedStyle(document.documentElement).getPropertyValue('--page-text-color').trim()||'#392D43';$('homeOverlay').classList.add('show');};
+$('heroFile').addEventListener('change',e=>{pendingHeroes=[...pendingHeroes,...Array.from(e.target.files).filter(f=>f.type.startsWith('image/'))];renderPreviews(pendingHeroes,'heroPreviewStrip');});
+function renderHeroSlides(files){const holder=$('heroSlides');holder.innerHTML='';files.forEach((f,i)=>{const slide=document.createElement('div');slide.className='hero-slide';const im=document.createElement('img');im.src=imgURL(f);im.alt='NARIN 图片 '+(i+1);slide.appendChild(im);holder.appendChild(slide);});heroIndex=0;buildHeroDots(files.length);startHeroCarousel();}
+function buildHeroDots(n){$('heroDots').innerHTML='';for(let i=0;i<n;i++){const b=document.createElement('button');b.className='hero-dot'+(i===0?' active':'');b.onclick=()=>moveHero(i);$('heroDots').appendChild(b);}}
+function moveHero(i){const n=$('heroSlides').children.length;if(!n)return;heroIndex=(i+n)%n;$('heroSlides').style.transform=`translateX(-${heroIndex*100}%)`;document.querySelectorAll('.hero-dot').forEach((d,j)=>d.classList.toggle('active',j===heroIndex));}
+function startHeroCarousel(){clearInterval(heroTimer);if($('heroSlides').children.length>1)heroTimer=setInterval(()=>moveHero(heroIndex+1),3500);}
+function saveHeroSlides(files){renderHeroSlides(files);const t=db.transaction('hero','readwrite');const st=t.objectStore('hero');st.clear();files.forEach((blob,i)=>st.put({id:i,blob}));}
+$('saveHome').onclick=()=>{const n=$('homeName').value.trim()||'NARIN';$('heroName').textContent=n;$('heroSub').textContent=$('homeSub').value;$('introText').innerText=$('homeIntro').value;const textColor=$('homeTextColor').value;document.documentElement.style.setProperty('--page-text-color',textColor);saveHeroSlides(pendingHeroes);pendingHeroes=[];localStorage.setItem('narinHome',JSON.stringify({name:n,sub:$('homeSub').value,intro:$('homeIntro').value,textColor}));$('homeOverlay').classList.remove('show');toast('主页设置已保存');};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$ (b.dataset.close).classList.remove('show'));
+
+$('addEntry').addEventListener('click',()=>showEntry());
+document.querySelector('.section-head').addEventListener('click',()=>showEntry());
+document.querySelector('.section-head').style.cursor='pointer';
+$('closeDetail').onclick=()=>{$('detailVideo').pause();$('detailOverlay').classList.remove('show');};
+$('detailPrev').onclick=()=>moveDetail(-1);$('detailNext').onclick=()=>moveDetail(1);
+let touchStartX=0,touchStartY=0;
+$('detailStage').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;},{passive:true});
+$('detailStage').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-touchStartX,dy=e.changedTouches[0].clientY-touchStartY;if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy))moveDetail(dx<0?1:-1);},{passive:true});
+function enterMain(){clearTimeout(splashTimer);$('splashOverlay').classList.remove('show');}
+function showSplash(){
+ $('splashName').textContent=$('heroName').textContent||'NARIN';
+ const first=$('heroSlides').querySelector('img');if(first){$('splashImage').src=first.src;$('splashImage').style.display='block';}else{$('splashImage').style.display='none';}
+ $('splashOverlay').classList.add('show');splashTimer=setTimeout(enterMain,3500);
+}
+let splashStartY=0;
+$('splashScreen').addEventListener('touchstart',e=>{splashStartY=e.touches[0].clientY;},{passive:true});
+$('splashScreen').addEventListener('touchend',e=>{if(splashStartY-e.changedTouches[0].clientY>35)enterMain();},{passive:true});
+$('splashScreen').addEventListener('wheel',e=>{if(e.deltaY>0)enterMain();},{passive:true});
+$('splashScreen').addEventListener('click',enterMain);
+(async()=>{try{applyTabs();updateCategoryOptions('photo');db=await openDB();const saved=JSON.parse(localStorage.getItem('narinHome')||'null');if(saved){$('heroName').textContent=saved.name;$('heroSub').textContent=saved.sub;$('introText').innerText=saved.intro;if(saved.textColor){document.documentElement.style.setProperty('--page-text-color',saved.textColor);$('homeTextColor').value=saved.textColor;}}await refresh();try{const hr=db.transaction('hero').objectStore('hero').getAll();hr.onsuccess=()=>{const hs=hr.result.sort((a,b)=>a.id-b.id).map(x=>x.blob);if(hs.length)renderHeroSlides(hs);setTimeout(showSplash,120);};}catch(e){setTimeout(showSplash,120);}}catch(e){toast('浏览器暂不支持本地保存');}})();
+</script>
+</body></html>
